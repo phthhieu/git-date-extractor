@@ -91,7 +91,7 @@ async function getTimestampsFromFilesBulk(filesToGet, optionsObj, cache, forceCr
 					// NEED to either wrap with try/catch, or create helper utility to wrap any promise with return null if fail, etc.
 
 					let createdStamp = null;
-					const createdStampsLog = await failSafePromise(spawnPromise(`git`, [`log`, `--follow`, `--pretty=format:%at`, `--`, fullFilePath], execOptions), null);
+					const createdStampsLog = await failSafePromise(spawnPromise(`git`, [`log`, `--follow`, `--pretty=format:%at`, '--since=30.days', `--`, fullFilePath], execOptions), null);
 					if (createdStampsLog) {
 					// Need to basically run `tail -n 1`, grab last line
 						const createdStamps = createdStampsLog.split(/[\r\n]+/m);
@@ -112,7 +112,7 @@ async function getTimestampsFromFilesBulk(filesToGet, optionsObj, cache, forceCr
 				if (gitCommitHook === 'none' || gitCommitHook === 'post') {
 					// If this is running after the commit that modified the file, we can use git log to pull the modified time out
 					// Modified should be the most recent and at the top of the log
-					modifiedStamp = await failSafePromise(spawnPromise(`git`, [`log`, `-1`, `--pretty=format:%at`, `--follow`, `--`, fullFilePath], execOptions), null);
+					modifiedStamp = await failSafePromise(spawnPromise(`git`, [`log`, `-1`, `--pretty=format:%at`, '--since=30.days', `--follow`, `--`, fullFilePath], execOptions), null);
 				}
 				modifiedStamp = Number(modifiedStamp);
 				if (gitCommitHook === 'pre' || !getIsValidStampVal(modifiedStamp)) {
